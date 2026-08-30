@@ -1,0 +1,1 @@
+Autonomous robots use optical cameras and LiDAR scanners to map environments. Visual SLAM helps build spatial grids for navigation paths.

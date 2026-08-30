@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision-Language Autonomous Navigation System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon"><i class="fa-solid fa-robot"></i></div>
+                <div class="brand-text">
+                    <h2>NAVIGATOR <span>AI</span></h2>
+                    <p>Vision-Language Robotics</p>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </button>
+                <button class="nav-item" data-tab="vision">
+                    <i class="fa-solid fa-eye"></i> Vision System
+                </button>
+                <button class="nav-item" data-tab="chatbot">
+                    <i class="fa-solid fa-comments"></i> AI Assistant (RAG)
+                </button>
+
+                <button class="nav-item" data-tab="navigation">
+                    <i class="fa-solid fa-compass"></i> Navigation Logic
+                </button>
+            </nav>
+
+            <div class="system-mini-status">
+                <div class="status-header">SYSTEM ENGINE</div>
+                <div class="mini-status-item">
+                    <span>Gemini API:</span>
+                    <span class="status-tag" id="mini-gemini-status">Connecting...</span>
+                </div>
+                <div class="mini-status-item">
+                    <span>Vector DB:</span>
+                    <span class="status-tag green" id="mini-vectordb-status">Ready</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header Bar -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h1 id="page-title">Autonomous Navigation Dashboard</h1>
+                    <p id="page-subtitle">Real-time Multimodal Perception, RAG Knowledge Base & Gemini Reasoning</p>
+                </div>
+                <div class="status-bar">
+                    <div class="status-badge" id="badge-gemini">
+                        <span class="dot yellow"></span> Gemini API
+                    </div>
+                    <div class="status-badge" id="badge-embeddings">
+                        <span class="dot green"></span> Embeddings
+                    </div>
+                    <div class="status-badge" id="badge-vectordb">
+                        <span class="dot green"></span> ChromaDB
+                    </div>
+                    <div class="status-badge" id="badge-rag">
+                        <span class="dot green"></span> RAG
+                    </div>
+                    <div class="status-badge" id="badge-vision">
+                        <span class="dot green"></span> Vision
+                    </div>
+                    <div class="status-badge" id="badge-mcp">
+                        <span class="dot green"></span> MCP Tools
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB 1: DASHBOARD OVERVIEW -->
+            <section class="tab-content active" id="tab-dashboard">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon blue"><i class="fa-solid fa-layer-group"></i></div>
+                        <div class="metric-data">
+                            <h3>Vector Chunks</h3>
+                            <span class="metric-value" id="stat-total-chunks">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon purple"><i class="fa-solid fa-folder-open"></i></div>
+                        <div class="metric-data">
+                            <h3>Indexed Documents</h3>
+                            <span class="metric-value" id="stat-total-docs">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon cyan"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="metric-data">
+                            <h3>Safety State</h3>
+                            <span class="metric-value green-text" id="stat-safety-state">NOMINAL</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon green"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="metric-data">
+                            <h3>Current Command</h3>
+                            <span class="metric-value cyan-text" id="stat-current-action">MOVE FORWARD</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Live Vision Preview Card -->
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-video"></i> Vision Perception Stream <span id="dash-mode-badge" class="status-tag" style="font-size: 0.7em; margin-left: 10px; background-color: var(--secondary); color: white;">Simulation Mode</span></h2>
+                            <button class="btn btn-sm btn-outline" onclick="triggerVisionAnalysis()">Analyze Frame</button>
+                        </div>
+                        <div class="panel-body flex-center">
+                            <div class="video-container">
+                                <img id="dash-vision-img" src="" alt="Perception Feed" style="display:none;">
+                                <div class="video-placeholder" id="dash-vision-placeholder">
+                                    <i class="fa-solid fa-camera-retro fa-3x"></i>
+                                    <p>Loading Simulated Vision Feed...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Decision Card -->
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-microchip"></i> Autonomous Decision Engine</h2>
+                        </div>
+                        <div class="panel-body">
+                            <div class="decision-display">
+                                <div class="action-box" id="dash-action-box">MOVE FORWARD</div>
+                                <div class="decision-details">
+                                    <div class="detail-row">
+                                        <span class="label">Obstacle Detected:</span>
+                                        <span class="val" id="dash-obs-detected">NO</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Direction:</span>
+                                        <span class="val" id="dash-obs-dir">Front</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">Confidence:</span>
+                                        <span class="val" id="dash-obs-conf">94%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="reasoning-box">
+                                <h4><i class="fa-solid fa-brain"></i> Gemini Safety Reasoning</h4>
+                                <p id="dash-reasoning-text">Path clear. Forward clearance verified by LiDAR and spatial vision sensors.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: VISION SYSTEM -->
+            <section class="tab-content" id="tab-vision">
+                <div class="dashboard-grid two-column">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-camera"></i> Camera Input & Spatial Bounding <span id="camera-mode-badge" class="status-tag" style="font-size: 0.7em; margin-left: 10px; background-color: var(--secondary); color: white;">Simulation Mode</span></h2>
+                            <div class="btn-group">
+                                <button class="btn btn-sm" id="btn-use-webcam"><i class="fa-solid fa-webcam"></i> Webcam</button>
+                                <button class="btn btn-sm btn-secondary" id="btn-use-sim"><i class="fa-solid fa-vr-cardboard"></i> Simulation</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="camera-stage">
+                                <video id="webcam-video" autoplay playsinline style="display:none;"></video>
+                                <canvas id="webcam-canvas" style="display:none;"></canvas>
+                                <img id="vision-output-img" src="" alt="Perception Output">
+                            </div>
+                            <div class="file-upload-bar margin-top">
+                                <label for="vision-file-input" class="btn btn-outline full-width">
+                                    <i class="fa-solid fa-upload"></i> Upload Frame Image
+                                </label>
+                                <input type="file" id="vision-file-input" accept="image/*" style="display:none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-magnifying-glass"></i> Multimodal Perception Analysis</h2>
+                        </div>
+                        <div class="panel-body">
+                            <div class="info-card">
+                                <h3>Visual Scene Description</h3>
+                                <p id="vision-scene-desc">Analyzing spatial geometry and object contours...</p>
+                            </div>
+                            <div class="telemetry-grid margin-top">
+                                <div class="tele-item">
+                                    <span>Obstacle Detected</span>
+                                    <strong id="vis-obs">NO</strong>
+                                </div>
+                                <div class="tele-item">
+                                    <span>Target Direction</span>
+                                    <strong id="vis-dir">Front</strong>
+                                </div>
+                                <div class="tele-item">
+                                    <span>Est. Distance</span>
+                                    <strong id="vis-dist">3.5 m</strong>
+                                </div>
+                                <div class="tele-item">
+                                    <span>Confidence</span>
+                                    <strong id="vis-conf">92%</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: AI ASSISTANT (RAG CHATBOT) -->
+            <section class="tab-content" id="tab-chatbot">
+                <div class="chat-wrapper">
+                    <div class="chat-messages" id="chat-messages-container">
+                        <div class="message system-msg">
+                            <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                            <div class="msg-content">
+                                <p>Hello! I am your <strong>Vision-Language Autonomous Navigation Assistant</strong>. Ask me anything about path planning, LiDAR, obstacle detection, or your uploaded documents.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="suggested-queries">
+                            <button onclick="sendPresetQuery('What sensors are best for obstacle detection?')">What sensors are best for obstacle detection?</button>
+                            <button onclick="sendPresetQuery('Explain autonomous navigation logic.')">Explain autonomous navigation logic.</button>
+                            <button onclick="sendPresetQuery('What does the document say about LiDAR?')">What does the document say about LiDAR?</button>
+                        </div>
+                        <form id="chat-form" class="chat-input-form">
+                            <input type="text" id="chat-input" placeholder="Type your robotics question here..." autocomplete="off">
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Send</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+
+
+            <!-- TAB 5: NAVIGATION LOGIC -->
+            <section class="tab-content" id="tab-navigation">
+                <div class="dashboard-grid two-column">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-compass"></i> SIMULATED SENSOR TELEMETRY & Safety Overrides</h2>
+                        </div>
+                        <div class="panel-body">
+                            <div class="sensor-readout">
+                                <div class="sensor-bar-item">
+                                    <div class="sensor-label">LiDAR Front Range (meters)</div>
+                                    <div class="progress-bg"><div class="progress-fill green" id="bar-lidar-front" style="width: 80%;"></div></div>
+                                    <span class="val-text" id="txt-lidar-front">2.8 m</span>
+                                </div>
+                                <div class="sensor-bar-item margin-top">
+                                    <div class="sensor-label">LiDAR Left Flank (meters)</div>
+                                    <div class="progress-bg"><div class="progress-fill blue" id="bar-lidar-left" style="width: 75%;"></div></div>
+                                    <span class="val-text" id="txt-lidar-left">2.5 m</span>
+                                </div>
+                                <div class="sensor-bar-item margin-top">
+                                    <div class="sensor-label">LiDAR Right Flank (meters)</div>
+                                    <div class="progress-bg"><div class="progress-fill yellow" id="bar-lidar-right" style="width: 30%;"></div></div>
+                                    <span class="val-text" id="txt-lidar-right">0.9 m</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-sliders"></i> Simulation Controls</h2>
+                        </div>
+                        <div class="panel-body">
+                            <p>Inject simulated spatial obstacles to test real-time AI decision making:</p>
+                            <div class="btn-grid margin-top">
+                                <button class="btn btn-outline" onclick="simulateObstacle('Front')">Obstacle Ahead</button>
+                                <button class="btn btn-outline" onclick="simulateObstacle('Left')">Obstacle Left</button>
+                                <button class="btn btn-outline" onclick="simulateObstacle('Right')">Obstacle Right</button>
+                                <button class="btn btn-success" onclick="simulateObstacle('Clear')">Clear Path</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Decision Panel -->
+                    <div class="panel-card" style="grid-column: 1 / -1;">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-brain"></i> Navigation Decision Engine Output</h2>
+                            <div class="action-highlight" id="nav-action-box">MOVE FORWARD</div>
+                        </div>
+                        <div class="panel-body" style="padding: 1.25rem;">
+                            <div class="decision-reasoning" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+                                <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 15px;">
+                                    <div><strong>Safety State:</strong> <span id="nav-safety-state" class="green-text">NOMINAL</span></div>
+                                    <div><strong>Obstacle Position:</strong> <span id="nav-obs-dir">Front</span></div>
+                                    <div><strong>Confidence:</strong> <span id="nav-obs-conf">94%</span></div>
+                                </div>
+                                <div class="reason-header" style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--primary);">AI Navigation Reasoning:</div>
+                                <p class="reason-text" id="nav-reasoning-text" style="font-style: italic; color: var(--text-muted); line-height: 1.5; font-size: 0.95rem;">Trajectory evaluated.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

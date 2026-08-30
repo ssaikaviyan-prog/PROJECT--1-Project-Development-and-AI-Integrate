@@ -1,0 +1,26 @@
+================================================================================
+VISION-LANGUAGE AUTONOMOUS NAVIGATION SYSTEM - TECHNICAL KNOWLEDGE BASE
+================================================================================
+
+1. INTRODUCTION TO AUTONOMOUS NAVIGATION
+Autonomous navigation enables mobile robots and robotic vehicles to traverse unstructured environments safely without human intervention. The system follows a continuous perception-action loop: Sense -> Understand -> Retrieve Knowledge -> Reason -> Decide -> Act. Key components include visual perception, range sensing, semantic spatial mapping, global path planning, and local collision avoidance.
+
+2. SENSOR ARCHITECTURE & OBSTACLE DETECTION
+- LiDAR Sensors: Light Detection and Ranging (LiDAR) uses pulsed laser beams to construct accurate 360-degree 3D point cloud maps. LiDAR is highly effective for obstacle detection, spatial depth measurement, and SLAM (Simultaneous Localization and Mapping). It operates reliably across varied lighting conditions.
+- Vision-Language Cameras: RGB-Depth cameras capture high-resolution visual scenes, enabling object recognition, semantic classification, and visual place recognition. Combined with Gemini Vision AI, the robot can identify complex objects such as chairs, doors, people, and hazards.
+- Ultrasonic & IMU Sensors: Ultrasonic sonar sensors provide short-range proximity safety checks (within 0.3m to 2.0m). Inertial Measurement Units (IMU) track angular velocity and heading direction (yaw, pitch, roll).
+
+3. PATH PLANNING AND NAVIGATION LOGIC
+Autonomous trajectory execution relies on a multi-tiered navigation stack:
+- Local Path Decision Engine: Continuously evaluates forward clearance and flank distances. If an obstacle is detected directly ahead within 1.5 meters, the navigation engine executes avoidance maneuvers:
+  * TURN LEFT: Executed when the left corridor offers greater clearance.
+  * TURN RIGHT: Executed when the right corridor offers greater clearance.
+  * MOVE FORWARD: Executed when the forward path is unobstructed for >= 3.0 meters.
+  * STOP: Emergency safety halt triggered when an obstacle is within 0.8 meters or critical battery thresholds are reached.
+
+4. RETRIEVAL-AUGMENTED GENERATION (RAG) & GEMINI AI REASONING
+The AI Assistant integrates Gemini LLM reasoning with local ChromaDB vector storage. Document chunks are converted to 384-dimensional vector embeddings (`gemini-embedding-001`). When a query is asked, semantic similarity search retrieves the top relevant context snippets, enabling Gemini to generate precise answers grounded strictly in documented robotics facts with explicit file source citations.
+
+5. SAFETY PROTOCOLS AND LIMITATIONS
+- Emergency Stop: Hard real-time override halting motor motion when range sensors detect immediate collision risks.
+- Environmental Constraints: Transparent glass surfaces, heavy fog, and extreme dynamic glare can degrade optical sensors, requiring sensor fusion with wheel encoders and ultrasonic proximity detectors.
