@@ -91,8 +91,12 @@ python -m backend.main
 ```
 
 Access the application dashboard at:
-- **Frontend Dashboard**: `http://localhost:8000`
-- **Swagger API Docs**: `http://localhost:8000/docs`
+- **Public Web URL (Live Tunnel)**: `https://free-houses-pay.loca.lt` *(Tunnel Verification Password / Endpoint IP: `59.182.208.95`)*
+- **Local Frontend Dashboard**: `http://localhost:8000`
+- **Swagger API Interactive Docs**: `http://localhost:8000/docs`
+- **ReDoc API Docs**: `http://localhost:8000/redoc`
+- **System Health Endpoint**: `http://localhost:8000/health`
+- **GitHub Repository**: `https://github.com/ssaikaviyan-prog/PROJECT--1-Project-Development-and-AI-Integrate`
 
 ---
 
